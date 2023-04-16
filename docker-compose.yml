@@ -4,16 +4,16 @@ services:
     image: ngosang/amule
     container_name: amule
     environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ=Europe/London
-      - GUI_PWD=<fill_password>
-      - WEBUI_PWD=<fill_password>
-      - MOD_AUTO_RESTART_ENABLED=true
-      - MOD_AUTO_RESTART_CRON=0 6 * * *
-      - MOD_AUTO_SHARE_ENABLED=false
-      - MOD_AUTO_SHARE_DIRECTORIES=/incoming;/my_movies
-      - MOD_FIX_KAD_GRAPH_ENABLED=true
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+      - GUI_PWD=${GUI_PWD}
+      - WEBUI_PWD=${WEBUI_PWD}
+      - MOD_AUTO_RESTART_ENABLED=${MOD_AUTO_RESTART_ENABLED}
+      - MOD_AUTO_RESTART_CRON=${MOD_AUTO_RESTART_CRON}
+      - MOD_AUTO_SHARE_ENABLED=${MOD_AUTO_SHARE_ENABLED}
+      - MOD_AUTO_SHARE_DIRECTORIES=${MOD_AUTO_SHARE_DIRECTORIES}
+      - MOD_FIX_KAD_GRAPH_ENABLED=${MOD_FIX_KAD_GRAPH_ENABLED}
     ports:
       - "4711:4711" # web ui
       - "4712:4712" # remote gui, webserver, cmd ...
@@ -21,7 +21,7 @@ services:
       - "4665:4665/udp" # ed2k global search udp (tcp port +3)
       - "4672:4672/udp" # ed2k udp
     volumes:
-      - <fill_amule_configuration_path>:/home/amule/.aMule
-      - <fill_amule_completed_downloads_path>:/incoming
-      - <fill_amule_incomplete_downloads_path>:/temp
+      - ${AMULE_CONFIG_PATH}:/home/amule/.aMule
+      - ${AMULE_DOWNLOAD_PATH}:/incoming
+      - ${AMULE_INCOMPLETE_PATH}:/temp
     restart: unless-stopped
