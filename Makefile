@@ -14,6 +14,7 @@ help: _header
 	@echo start / stop / restart
 	@echo ------------------------
 	@echo stats / logs / workspace
+	@echo update
 	@echo clean
 	@echo ------------------------
 
@@ -38,6 +39,9 @@ logs:
 
 workspace:
 	@docker compose exec amule /bin/sh
+
+update:
+	@docker compose pull amule
 
 clean:
 	@docker compose down -v --remove-orphans
