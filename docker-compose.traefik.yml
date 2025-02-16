@@ -1,0 +1,13 @@
+services:
+  amule:
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.amule.rule=Host(`${FQDN_AMULE:-amule.test}`)"
+      - "traefik.http.routers.amule.entrypoints=websecure"
+      - "traefik.http.routers.amule.tls=true"
+      - "traefik.http.services.amule.loadbalancer.server.port=4711"
+
+networks:
+  default:
+    name: ${NETWORK_NAME:-traefik-network}
+    external: true
