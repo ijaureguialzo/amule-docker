@@ -1,6 +1,8 @@
 services:
   amule:
-    image: ngosang/amule
+    build:
+      context: .
+      dockerfile: Dockerfile
     container_name: amule
     environment:
       - PUID=${PUID}
