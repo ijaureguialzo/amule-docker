@@ -1,8 +1,8 @@
-FROM alpine/git as cloner
+FROM alpine/git AS cloner
 
 RUN git clone https://github.com/ijaureguialzo/amuleweb-adaptable.git /tmp/amuleweb-adaptable
 
-FROM alpine:edge as builder
+FROM alpine:edge AS builder
 
 WORKDIR /tmp
 
