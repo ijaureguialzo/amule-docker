@@ -4,6 +4,7 @@ services:
       context: .
       dockerfile: Dockerfile
     container_name: amule
+    init: true
     environment:
       - PUID=${PUID}
       - PGID=${PGID}
