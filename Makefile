@@ -23,11 +23,19 @@ _header:
 	@echo aMule en Docker
 	@echo ---------------
 
+_urls: _header
+	${info }
+	@echo -----------------------------
+	@echo [aMule] http://localhost:4711
+	@echo -----------------------------
+
 build:
 	@docker compose build --pull
 
-start:
+_start-command:
 	@docker compose up -d --remove-orphans
+
+start: _start-command _urls
 
 stop:
 	@docker compose stop
