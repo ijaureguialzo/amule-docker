@@ -56,7 +56,6 @@ COPY --from=builder /usr/bin/alcc /usr/bin/amulecmd /usr/bin/amuled /usr/bin/amu
 
 # Copy aMule shared data and Web UI
 COPY --from=builder /usr/share/amule /usr/share/amule
-COPY --from=builder /usr/share/man/man1/alcc.1.gz /usr/share/man/man1/amulecmd.1.gz /usr/share/man/man1/amuled.1.gz /usr/share/man/man1/amuleweb.1.gz /usr/share/man/man1/ed2k.1.gz /usr/share/man/man1/
 COPY --from=cloner /tmp/amuleweb-adaptable /usr/share/amule/webserver/amuleweb-adaptable
 
 # Copy man docs
