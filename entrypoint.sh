@@ -39,6 +39,7 @@ mod_fix_kad_bootstrap() {
         if [ ! -f "${AMULE_HOME}/nodes.dat" ]; then
             printf "[MOD_FIX_KAD_BOOTSTRAP] Downloading nodes.dat from %s ... You can disable this mod with MOD_FIX_KAD_BOOTSTRAP_ENABLED=false\n" "${KAD_NODES_DAT_URL}"
             curl -s -o "${AMULE_HOME}/nodes.dat" "${KAD_NODES_DAT_URL}"
+            chown "${AMULE_USER}:${AMULE_GROUP}" "${AMULE_HOME}/nodes.dat"
             printf "[MOD_FIX_KAD_BOOTSTRAP] Downloaded successfully!\n"
         else
             printf "[MOD_FIX_KAD_BOOTSTRAP] File nodes.dat already exist. You can disable this mod with MOD_FIX_KAD_BOOTSTRAP_ENABLED=false\n"
@@ -53,23 +54,35 @@ mod_auto_share() {
         # Fix issue https://github.com/ngosang/docker-amule/issues/9
         # Share all the directories (separated by semicolon ';') and subdirectories in aMule.
         printf "[MOD_AUTO_SHARE] Sharing the following directories with sub-directories: %s ... You can disable this mod with MOD_AUTO_SHARE_ENABLED=false\n" "$MOD_AUTO_SHARE_DIRECTORIES"
-        SHAREDDIR_CONF=${AMULE_HOME}/shareddir.dat
-        printf "/incoming\n" > "$SHAREDDIR_CONF"
-        IN="$MOD_AUTO_SHARE_DIRECTORIES"
-        while [ "$IN" != "$iter" ] ;do
-            iter=${IN%%;*}
-            IN="${IN#"$iter";}"
-            printf "[MOD_AUTO_SHARE] Sharing directory '%s' with sub-directories...\n" "$iter"
-            find "$iter" -type d >> "$SHAREDDIR_CONF"
+        SHAREDDIR_CONF="${AMULE_HOME}/shareddir.dat"
+        SHAREDDIR_TMP="${SHAREDDIR_CONF}.tmp"
+        printf "%s\n" "${AMULE_INCOMING}" > "$SHAREDDIR_TMP"
+        IFS=';'
+        # shellcheck disable=SC2086
+        set -- $MOD_AUTO_SHARE_DIRECTORIES
+        for raw_dir in "$@"; do
+            dir=$(printf '%s' "$raw_dir" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')
+            [ -z "$dir" ] && continue
+            if [ -d "$dir" ]; then
+                printf "[MOD_AUTO_SHARE] Sharing directory '%s' with sub-directories...\n" "$dir"
+                find "$dir" -type d >> "$SHAREDDIR_TMP"
+            else
+                printf "[MOD_AUTO_SHARE] Skipping missing directory '%s'\n" "$dir"
+            fi
         done
+        sort -u "$SHAREDDIR_TMP" > "$SHAREDDIR_CONF"
+        rm -f "$SHAREDDIR_TMP"
+        chown "${AMULE_USER}:${AMULE_GROUP}" "$SHAREDDIR_CONF"
+        # Read-only file because aMule rewrites it on the first run
+        chmod 444 "$SHAREDDIR_CONF"
     fi
 }
 
 AMULE_UID=${PUID:-1000}
 AMULE_GID=${PGID:-1000}
 
-AMULE_INCOMING=/incoming
-AMULE_TEMP=/temp
+AMULE_INCOMING=${INCOMING_DIR:-"/incoming"}
+AMULE_TEMP=${TEMP_DIR:-"/temp"}
 AMULE_HOME=/home/amule/.aMule
 AMULE_CONF=${AMULE_HOME}/amule.conf
 REMOTE_CONF=${AMULE_HOME}/remote.conf
@@ -351,9 +364,9 @@ if [ -n "${WEBUI_PWD}" ]; then
 fi
 
 # Set permissions
-chown -R "${AMULE_UID}:${AMULE_GID}" ${AMULE_INCOMING}
-chown -R "${AMULE_UID}:${AMULE_GID}" ${AMULE_TEMP}
-chown -R "${AMULE_UID}:${AMULE_GID}" ${AMULE_HOME}
+chown -R "${AMULE_UID}:${AMULE_GID}" "${AMULE_INCOMING}"
+chown -R "${AMULE_UID}:${AMULE_GID}" "${AMULE_TEMP}"
+chown -R "${AMULE_UID}:${AMULE_GID}" "${AMULE_HOME}"
 
 # Modifications / Fixes
 mod_auto_restart
@@ -372,4 +385,4 @@ while true; do
         break
     fi
 done
-exit $EXIT_CODE
+exit "$EXIT_CODE"

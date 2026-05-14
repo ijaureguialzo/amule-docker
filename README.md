@@ -1,10 +1,11 @@
 # ngosang/amule
 
 [![Latest release](https://img.shields.io/github/v/release/ngosang/docker-amule)](https://github.com/ngosang/docker-amule/releases)
-[![Docker Pulls](https://img.shields.io/docker/pulls/ngosang/amule)](https://hub.docker.com/r/ngosang/amule/)
-[![Donate PayPal](https://img.shields.io/badge/Donate-PayPal-yellow.svg)](https://www.paypal.com/paypalme/diegoheras0xff)
-[![Donate Bitcoin](https://img.shields.io/badge/Donate-Bitcoin-f7931a.svg)](https://www.blockchain.com/btc/address/14EcPN47rWXkmFvjfohJx2rQxxoeBRJhej)
-[![Donate Ethereum](https://img.shields.io/badge/Donate-Ethereum-8c8c8c.svg)](https://www.blockchain.com/eth/address/0x0D1549BbB00926BF3D92c1A8A58695e982f1BE2E)
+[![Docker Pulls](https://img.shields.io/docker/pulls/ngosang/amule)](https://hub.docker.com/r/ngosang/amule)
+[![Docker Stars](https://img.shields.io/docker/stars/ngosang/amule)](https://hub.docker.com/r/ngosang/amule)
+[![GitHub Repo stars](https://img.shields.io/github/stars/ngosang/docker-amule)](https://github.com/ngosang/docker-amule)
+
+[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/ngosang)
 
 [aMule](https://github.com/amule-project/amule) is a multi-platform client for the ED2K file sharing network and based on the windows client eMule. aMule started in August 2003, as a fork of xMule, which is a fork of lMule.
 
@@ -12,17 +13,27 @@
 
 Inspired by [tchabaud](https://github.com/tchabaud/dockerfiles/tree/master/amule) and [synopsis8](https://github.com/synopsis8/dockerfiles/tree/master/amule) work.
 
-## Docker Registry
+## Docker Images
 
-Docker images are available in [GHCR](https://github.com/users/ngosang/packages/container/package/amule) and [DockerHub](https://hub.docker.com/r/ngosang/amule).
+Docker images are available in [DockerHub](https://hub.docker.com/r/ngosang/amule) and [GHCR](https://github.com/users/ngosang/packages/container/package/amule).
 
 ```bash
-docker pull ghcr.io/ngosang/amule
-or
 docker pull ngosang/amule
+# or
+docker pull ghcr.io/ngosang/amule
 ```
 
-## Supported Architectures
+### Docker Tags
+
+Stable:
+* `latest` — Latest stable release.
+* `2.3.3-21` — Specific stable version.
+
+Development:
+* `develop` — Latest development build (compiled from aMule master branch).
+* `develop-20260512-abc1234` — Specific development build: date + aMule upstream commit.
+
+### Supported Architectures
 
 The architectures supported by this image are:
 
@@ -31,8 +42,8 @@ The architectures supported by this image are:
 * linux/arm/v7
 * linux/arm64/v8
 * linux/ppc64le
-* linux/s390x
 * linux/riscv64
+* linux/s390x
 
 ## Application Setup
 
@@ -57,7 +68,6 @@ Compatible with docker-compose v2 schemas.
 
 ```yaml
 ---
-version: "2.1"
 services:
   amule:
     image: ngosang/amule

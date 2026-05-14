@@ -1,5 +1,36 @@
 # Changelog
 
+## 2.3.3-21 (2026/05/12)
+
+* Build aMule from source code
+* Update AmuleWebUI-Reloaded theme
+* Update GitHub actions
+* Remove package.json file and use VERSION file instead
+* Update base Docker image to Alpine Linux 3.23
+
+## 2.3.3-20 (2025/10/29)
+
+* Update AmuleWebUI-Reloaded theme (fixes udp_port and reconn_en options)
+* Fix file ownership for nodes.dat and shareddir.dat
+* Fix duplicate paths in MOD_AUTO_SHARE_DIRECTORIES env var
+* Make /incoming and /temp paths customizable with INCOMING_DIR and TEMP_DIR env vars
+* Replace base Docker image with Alpine Linux 3.22
+
+## 2.3.3-19 (2025/02/05)
+
+* Update AmuleWebUI-Reloaded theme
+* Update docker-compose to the latest specification
+* Rebuild with latest base Docker image
+
+## 2.3.3-18 (2024/05/31)
+
+* Rebuild with latest base Docker image
+
+## 2.3.3-17 (2024/01/20)
+
+* Fix MOD_AUTO_SHARE to re-scan directories after aMule restart
+* Rebuild with latest base Docker image
+
 ## 2.3.3-16 (2023/10/21)
 
 * Improve download cache/speed. FileBufferSizePref=1400
