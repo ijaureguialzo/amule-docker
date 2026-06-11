@@ -1,5 +1,43 @@
 # Changelog
 
+## 3.0.0-1 (2026/06/09)
+
+* **Major release:** Please read this changelog carefully before upgrading. It is strongly recommended to back up your aMule config folder and to create new `amule.conf` and `remote.conf` files with default values.
+* Update aMule to 3.0.0 stable release
+* Replace Alpine Linux base Docker image with Debian trixie-slim (required for debug and backtraces)
+* Update supported architectures: add linux/386 and linux/arm/v5, drop linux/arm/v6
+* Enable symbolized crash backtraces. When aMule crashes you will see function names in the log traces
+* Update default amule.conf and remote.conf templates to match aMule 3.0.0 defaults (new keys, updated values and HTTPS URLs)
+* Fix corrupted log output for shared files and directories with non-ASCII names
+* Install ca-certificates for HTTPS downloads (nodes.dat, server.met, ipfilter.zip)
+* Remove UPnP support. It only works with Docker host networking (network_mode: host)
+* Remove GeoIP/IP2Country support. The remote GUI (amulegui) keeps working (resolves country flags client-side)
+* Remove AmuleWebUI-Reloaded theme (not compatible with aMule 3.0.0). Existing configs are migrated to the default theme
+* Remove man pages from the Docker image. You can use 'command --help' to get similar information
+* Remove fix Kad graph mod (MOD_FIX_KAD_GRAPH). Bug fixed upstream in aMule 3.0.0
+* Remove fix Kad bootstrap mod (MOD_FIX_KAD_BOOTSTRAP). Bug fixed upstream in aMule 3.0.0
+* Simplify auto share mod (MOD_AUTO_SHARE) to use aMule 3.0.0 native recursive shares (shareddir-recursive.dat)
+* Update aMule repository URL to https://github.com/amule-org/amule
+* Build aMule from source using CMake (new upstream build system)
+* Unify Dockerfile and Dockerfile.develop parameterized by the AMULE_REF build argument (accepts a tag, branch or commit)
+* New Dockerfile.debug (debug tag) built in Debug mode with debugging tools (gdb, strace, lsof, heaptrack) to diagnose crashes
+* Optimize build time by performing shallow git clones
+* Update README.md and docker-compose.yml
+
+## 2.3.3-22 (2026/05/15)
+
+* New Docker image for aMule development version. Check available Docker tags in the README
+* Update default paths: INCOMING_DIR=/downloads/incoming, TEMP_DIR=/downloads/temp. Please read the README and update your paths accordingly
+* Fix exit code handling when the Docker container stops: SIGINT/SIGTERM signals are now properly captured
+* Replace entrypoint with s6-overlay supervisor for improved process management and reliability
+* Run amuleweb as a supervised process to enable automatic restart on failure
+* Add FIX_PERMISSIONS environment variable to automatically set ownership of incoming and temp directories
+* Add UMASK environment variable (default: 0002, resulting in 664/775 permissions)
+* Document INCOMING_DIR, TEMP_DIR, UMASK and FIX_PERMISSIONS environment variables in README
+* Refactor entrypoint scripts
+* Clean up architecture-specific Docker tags in CI pipeline
+* Update GitHub Actions runners to Node.js 24
+
 ## 2.3.3-21 (2026/05/12)
 
 * Build aMule from source code

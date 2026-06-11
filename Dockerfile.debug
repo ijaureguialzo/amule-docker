@@ -1,7 +1,3 @@
-FROM alpine/git AS cloner
-
-RUN git clone https://github.com/ijaureguialzo/amuleweb-adaptable.git /tmp/amuleweb-adaptable
-
 FROM debian:trixie-slim AS builder
 
 ENV DEBIAN_FRONTEND=noninteractive
@@ -16,7 +12,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
 # Build aMule from source (AMULE_REF can be a tag, branch, or commit SHA)
-ARG AMULE_REF=3.0.0
+# Built with CMAKE_BUILD_TYPE=Debug so the binaries keep full debug symbols and are
+# not optimized, making them suitable for gdb / heaptrack analysis
+ARG AMULE_REF=master
 RUN git init -q amule-src && \
     git -C amule-src fetch --depth 1 --tags https://github.com/amule-org/amule.git ${AMULE_REF} && \
     git -C amule-src checkout -q FETCH_HEAD && \
@@ -24,7 +22,7 @@ RUN git init -q amule-src && \
     so="$(find /usr/lib -name 'libatomic.so.1' -print -quit)" && [ -n "$so" ] && ln -sf "$(basename "$so")" "${so%.1}" ; \
     cmake -B amule-build amule-src \
         -DCMAKE_INSTALL_PREFIX=/usr \
-        -DCMAKE_BUILD_TYPE=Release \
+        -DCMAKE_BUILD_TYPE=Debug \
         -DBUILD_TESTING=NO \
         -DBUILD_MONOLITHIC=NO \
         -DBUILD_DAEMON=YES \
@@ -47,12 +45,13 @@ LABEL maintainer="ngosang@hotmail.es"
 # Copy binaries and Web UI
 COPY --from=builder /usr/bin/alcc /usr/bin/amulecmd /usr/bin/amuled /usr/bin/amuleweb /usr/bin/ed2k /usr/bin/
 COPY --from=builder /usr/share/amule /usr/share/amule
-COPY --from=cloner /tmp/amuleweb-adaptable /usr/share/amule/webserver/amuleweb-adaptable
 
-# Install runtime dependencies and remove unnecessary locale files
+# Install runtime dependencies plus debugging tools (gdb, strace, lsof, heaptrack)
+# and remove unnecessary locale files
 RUN apt-get update && apt-get install -y --no-install-recommends \
         libcrypto++8t64 libreadline8t64 libgcc-s1 libstdc++6 libpng16-16t64 libwxbase3.2-1t64 libglib2.0-0t64 \
         libatomic1 libbinutils ca-certificates curl tzdata procps pwgen s6 cron systemd-standalone-sysusers \
+        gdb strace lsof heaptrack \
     && rm -rf /var/lib/apt/lists/* /usr/share/locale /usr/share/doc/* /usr/share/doc-base /usr/share/lintian && \
     # Check binaries are OK (fail the build if any shared library is missing)
     for bin in alcc amulecmd amuled amuleweb ed2k; do \
@@ -72,11 +71,11 @@ ENTRYPOINT ["/home/amule/entrypoint.sh"]
 # HELP
 #
 # => Build Docker image (stable release, AMULE_REF defaults to the latest stable tag)
-# docker build -t ngosang/amule:test --progress=plain .
+# docker build -f Dockerfile.debug -t ngosang/amule:debug --progress=plain .
 #
-# => Build a develop image from a specific aMule branch or commit
-# docker build --build-arg AMULE_REF=<branch-or-commit> -t ngosang/amule:test --progress=plain .
+# => Build a debug image from a specific aMule branch or commit
+# docker build -f Dockerfile.debug --build-arg AMULE_REF=<branch-or-commit> -t ngosang/amule:debug --progress=plain .
 #
 # => Build multi-arch Docker image
 # docker buildx create --use
-# docker buildx build -t ngosang/amule:test --progress=plain --platform linux/386,linux/amd64,linux/arm/v5,linux/arm/v7,linux/arm64/v8,linux/ppc64le,linux/riscv64,linux/s390x .
+# docker buildx build -f Dockerfile.debug -t ngosang/amule:debug --progress=plain --platform linux/386,linux/amd64,linux/arm/v5,linux/arm/v7,linux/arm64/v8,linux/ppc64le,linux/riscv64,linux/s390x .
